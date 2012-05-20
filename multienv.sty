@@ -1,13 +1,14 @@
-\ProvidesPackge{multienv}[2012/05/20 v1.0 Add multiple environments using a Key=value syntax]
+\ProvidesPackage{multienv}[2012/05/20 v1.0 Add multiple environments using a Key=value syntax]
 
 \newcommand{\multienv}{%
     \begingroup
     \@ifstar{%
         \let\multienv@addcode\multienv@addcode@out
+        \multienv@readkeys
     }{%
         \let\multienv@addcode\multienv@addcode@in
+        \multienv@readkeys
     }%
-    \multienv@readkeys
 }
 \def\endmultienv{\end@multienv\endgroup}
 
@@ -19,11 +20,34 @@
     \end@multienv\endgroup
 }
 
+\newcommand\newmultienvironment{%
+    \@ifstar{%
+        \let\multienv@addcode\multienv@addcode@out
+        \newmultienvironment@
+    }{%
+        \let\multienv@addcode\multienv@addcode@in
+        \newmultienvironment@
+    }%
+}
+
+\def\newmultienvironment@#1#2{%
+    \begingroup
+    \multienv@readkeys@{#2}%
+    \global\let\@gtempa\begin@multienv
+    \global\let\@gtempb\end@multienv
+    \endgroup
+    \expandafter\let\csname #1\endcsname\@gtempa
+    \expandafter\let\csname end#1\endcsname\@gtempb
+}
+
 \def\multienv@readkeys#1{%
+    \multienv@readkeys@{#1}%
+    \begin@multienv
+}
+\def\multienv@readkeys@#1{%
     \let\begin@multienv\@empty
     \let\end@multienv\@empty
     \multienv@readkeyval#1,\@nnil,\@nnil
-    \begin@multienv
 }
 \let\begin@multienv\@empty
 \let\end@multienv\@empty
@@ -60,8 +84,9 @@
         \multienv@@addenv
     }{%
         \ifcase0%
+            \ifx\@let@token\@nnil1\else
             \ifx\@let@token[1\else
-            \ifx\@let@token<1\fi\fi
+            \ifx\@let@token<1\fi\fi\fi
         \relax
             \expandafter\multienv@@addenv@
         \else
