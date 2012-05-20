@@ -1,0 +1,114 @@
+\ProvidesPackge{multienv}[2012/05/20 v1.0 Add multiple environments using a Key=value syntax]
+
+\newcommand{\multienv}{%
+    \begingroup
+    \@ifstar{%
+        \let\multienv@addcode\multienv@addcode@out
+    }{%
+        \let\multienv@addcode\multienv@addcode@in
+    }%
+    \multienv@readkeys
+}
+\def\endmultienv{\end@multienv\endgroup}
+
+\newenvironment{multienv*}{%
+    \begingroup
+    \let\multienv@addcode\multienv@addcode@out
+    \multienv@readkeys
+}{%
+    \end@multienv\endgroup
+}
+
+\def\multienv@readkeys#1{%
+    \let\begin@multienv\@empty
+    \let\end@multienv\@empty
+    \multienv@readkeyval#1,\@nnil,\@nnil
+    \begin@multienv
+}
+\let\begin@multienv\@empty
+\let\end@multienv\@empty
+
+\def\multienv@readkeyval#1,{%
+    \ifx\@nnil#1\relax
+        \expandafter\@gobble
+    \else
+        \multienv@sepkeyval#1=\@nnil=\@nnil\relax
+        \expandafter\multienv@readkeyval
+    \fi
+}
+\def\multienv@sepkeyval#1=#2={%
+    \ifx\@nnil#2\relax
+        \multienv@handlekeyval{#1}{}%
+        \expandafter\@gobble
+    \else
+        \multienv@handlekeyval{#1}{#2}%
+        \expandafter
+        \@gobblefour
+    \fi
+}
+
+\def\multienv@handlekeyval#1#2{%
+    \@ifundefined{multienv@key@#1}{%
+        \multienv@addenv{#1}{#2}%
+    }{%
+        \@nameuse{multienv@key@#1}#2\@nnil
+    }%
+}
+
+\def\multienv@addenv#1#2{%
+    \@ifnextchar\bgroup{%
+        \multienv@@addenv
+    }{%
+        \ifcase0%
+            \ifx\@let@token[1\else
+            \ifx\@let@token<1\fi\fi
+        \relax
+            \expandafter\multienv@@addenv@
+        \else
+            \expandafter\multienv@@addenv
+        \fi
+    }#2\@nnil{#1}%
+}
+
+\def\multienv@@addenv@#1\@nnil{%
+    \multienv@@addenv{{#1}}\@nnil
+}
+
+\def\multienv@@addenv#1\@nnil#2{%
+     \multienv@addcode{\multi@env{#2}#1}{\endmulti@env{#2}}%
+}
+
+\def\multi@env#1{%
+  \begingroup
+  \@ifundefined{#1}%
+    {\@latex@error{Environment #1 undefined}\@eha}%
+    {\csname #1\endcsname}%
+}
+
+\def\endmulti@env#1{\csname end#1\endcsname\endgroup}
+
+\def\multienv@addcode@out#1#2{%
+    \@temptokena{#1}%
+    \@temptokena\expandafter\expandafter\expandafter{\expandafter\the\expandafter\@temptokena\begin@multienv}%
+    \edef\begin@multienv{\the\@temptokena}%
+    \@temptokena\expandafter{\end@multienv#2}%
+    \edef\end@multienv{\the\@temptokena}%
+}
+
+\def\multienv@addcode@in#1#2{%
+    \@temptokena\expandafter{\begin@multienv#1}%
+    \edef\begin@multienv{\the\@temptokena}%
+    \@temptokena{#2}%
+    \@temptokena\expandafter\expandafter\expandafter{\expandafter\the\expandafter\@temptokena\end@multienv}%
+    \edef\end@multienv{\the\@temptokena}%
+}
+
+\@namedef{multienv@key@add code}#1\@nnil{%
+    \multienv@addcode#1{}{}%
+}
+
+\@namedef{multienv@key@adjustbox}#1\@nnil{%
+    \multienv@addcode{\csname adjustbox@noindent\endcsname\adjustbox{#1}\bgroup\ignorespaces}{\ifhmode\unskip\fi\egroup}%
+}
+
+
