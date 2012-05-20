@@ -37,6 +37,7 @@
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
+\OnlyDescription
 \optionaloff
 \begin{document}
   \DocInput{\jobname.dtx}
@@ -46,7 +47,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{0}
+% \CheckSum{297}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -80,11 +81,19 @@
 %
 % \begin{abstract}\noindent
 % This package provides a \env{multienv} environment which allows to
-% easily apply multiple environments using a key=value syntax.
+% easily add multiple environments using a key=value syntax.
 % Macros to define environments using this syntax are also provided.
 % \end{abstract}
 %
 % \section{Introduction}
+% It is sometimes required to add multiple environments around some text
+% in order to achieve a specific format. This macro simplifies this task
+% especially for larger number of environments by allowing the environments
+% and their arguments to be specified using a key=value syntax.
+% A special \Key{add code} key is also provided to allow arbitrary code being
+% added before and after the environment content.
+% Furthermore macros are provided to allow the definition of new environments
+% which contain multiple other environments and code.
 %
 % \section{Usage}
 % \vspace{-3ex}
@@ -107,7 +116,7 @@
 % as a single mandatory argument and is placed inside braces after the environment,
 % otherwise it is placed unchanged after the environment:
 % \par\medskip\par\noindent
-% \begin{tabular}{l@{ $\Rightarrow$ }l}
+% \begin{tabular}{@{}l@{ $\Rightarrow$ }l@{}}
 %   \Key{\meta{env}}         & \Macro\begin{<env>}\ldots\Macro\end{<env>} \\
 %   \Key{\meta{env}}=        & \Macro\begin{<env>}\ldots\Macro\end{<env>} \\
 %   \Key{\meta{env}}=<arg>   & \Macro\begin{<env>}{<arg>}\ldots\Macro\end{<env>} \\
@@ -117,7 +126,7 @@
 %   \Key{\meta{env}}=[<oarg>]{<marg>} & \Macro\begin{<env>}[<oarg>]{<marg>}\ldots\Macro\end{<env>} \\
 %   \Key{\meta{env}}=<< <aarg> >> & \Macro\begin{<env>}<< <aarg> >>\ldots\Macro\end{<env>} \\
 %   \Key{\meta{env}}=<< <aarg> >>{<marg>} & \Macro\begin{<env>}<< <aarg> >>{<marg>}\ldots\Macro\end{<env>} \\
-%   \multicolumn{2}{l}{etc.} \\
+%   \multicolumn{2}{@{}l@{}}{etc.} \\
 % \end{tabular}
 % \par\bigskip\par
 %
@@ -155,7 +164,7 @@
 %     content
 %   \end{multienv}
 % \end{lstlisting}
-% \noindent is identical to:
+% \noindent is basically identical to:
 % \begin{lstlisting}
 %   \begin{enva}
 %     \begin{envb}{arg}

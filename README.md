@@ -18,7 +18,7 @@ The following 'multienv' environment:
       content
     \end{multienv}
 
-is identical to:
+is basically identical to:
 
     \begin{enva}
       \begin{envb}{arg}
@@ -29,4 +29,7 @@ is identical to:
         code after
       \end{envb}
     \end{enva}
+
+except that actually the "plain" form together with explicit groups
+is used: \begingroup\enva .. \endenva\endgroup.
 
