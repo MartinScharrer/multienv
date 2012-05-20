@@ -1,5 +1,18 @@
-\ProvidesPackage{multienv}[2012/05/20 v1.0 Add multiple environments using a Key=value syntax]
-
+%    \begin{macrocode}
+%<!COPYRIGHT>
+\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+\ProvidesPackage{multienv}[%
+%<!DATE>
+%<!VERSION>
+%<*DRIVER>
+    2099/01/01 develop
+%</DRIVER>
+    Add multiple environments using a Key=value syntax]
+%    \end{macrocode}
+%
+%
+% \begin{macro}{\multienv}
+%    \begin{macrocode}
 \newcommand{\multienv}{%
     \begingroup
     \@ifstar{%
@@ -10,8 +23,19 @@
         \multienv@readkeys
     }%
 }
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\endmultienv}
+%    \begin{macrocode}
 \def\endmultienv{\end@multienv\endgroup}
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{environment}{multienv*}
+%    \begin{macrocode}
 \newenvironment{multienv*}{%
     \begingroup
     \let\multienv@addcode\multienv@addcode@out
@@ -19,29 +43,54 @@
 }{%
     \end@multienv\endgroup
 }
-
+%    \end{macrocode}
+% \end{environment}
+%
+%
+% \begin{macro}{\newmultienvironment}
+%    \begin{macrocode}
 \newcommand\newmultienvironment{%
     \let\@multi@environment\newenvironment
     \@multienvironment
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\renewmultienvironment}
+%    \begin{macrocode}
 \newcommand\renewmultienvironment{%
     \let\@multi@environment\renewenvironment
     \@multienvironment
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\providemultienvironment}
+%    \begin{macrocode}
 \newcommand\providemultienvironment{%
     \@ifstar
         {\@providemultienvironment*}%
         {\@providemultienvironment{}}%
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\@providemultienvironment}
+%    \begin{macrocode}
 \def\@providemultienvironment#1#2{%
     \@ifundefined{#2}%
         {\newmultienvironment#1{#2}}%
         {\begingroup\tracingall\renewcommand\@tempa[1][]{\renewcommand\@tempa[1][]{\expandafter\endgroup\@gobble}\@tempa}\@tempa}%
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\@multienvironment}
+%    \begin{macrocode}
 \def\@multienvironment{%
     \@ifstar{%
         \let\multienv@addcode\multienv@addcode@out
@@ -51,11 +100,21 @@
         \newmultienvironment@marg
     }%
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\newmultienvironment@marg}
+%    \begin{macrocode}
 \long\def\newmultienvironment@marg#1{%
     \@testopt{\newmultienvironment@oarg{#1}}{[0]}%
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\newmultienvironment@oarg}
+%    \begin{macrocode}
 \long\def\newmultienvironment@oarg#1[#2]{%
     \@ifnextchar[{%
         \newmultienvironment@oargb{#1}{#2}%
@@ -63,10 +122,21 @@
         \newmultienvironment@def{#1}{[#2]}%
     }%
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\newmultienvironment@oargb}
+%    \begin{macrocode}
 \long\def\newmultienvironment@oargb#1#2[#3]{%
     \newmultienvironment@def{#1}{[#2][#3]}%
 }
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\newmultienvironment@def}
+%    \begin{macrocode}
 \long\def\newmultienvironment@def#1#2#3{%
     \begingroup
     \multienv@readkeys@{#3}%
@@ -76,19 +146,37 @@
     \endgroup
     \expandafter\@tempa\the\@temptokena
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\multienv@readkeys}
+%    \begin{macrocode}
 \long\def\multienv@readkeys#1{%
     \multienv@readkeys@{#1}%
     \begin@multienv
 }
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\multienv@readkeys@}
+%    \begin{macrocode}
 \long\def\multienv@readkeys@#1{%
     \let\begin@multienv\@empty
     \let\end@multienv\@empty
     \multienv@readkeyval#1,\@nnil,\@nnil
 }
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
 \let\begin@multienv\@empty
 \let\end@multienv\@empty
-
+%    \end{macrocode}
+%
+% \begin{macro}{\multienv@readkeyval}
+%    \begin{macrocode}
 \long\def\multienv@readkeyval#1,{%
     \ifx\@nnil#1\relax
         \expandafter\@gobble
@@ -97,6 +185,12 @@
         \expandafter\multienv@readkeyval
     \fi
 }
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\multienv@sepkeyval}
+%    \begin{macrocode}
 \long\def\multienv@sepkeyval#1=#2={%
     \ifx\@nnil#2\relax
         \multienv@handlekeyval{#1}{}%
@@ -107,7 +201,12 @@
         \@gobblefour
     \fi
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\multienv@handlekeyval}
+%    \begin{macrocode}
 \long\def\multienv@handlekeyval#1#2{%
     \@ifundefined{multienv@key@#1}{%
         \multienv@addenv{#1}{#2}%
@@ -115,7 +214,12 @@
         \@nameuse{multienv@key@#1}#2\@nnil
     }%
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\multienv@addenv}
+%    \begin{macrocode}
 \long\def\multienv@addenv#1#2{%
     \@ifnextchar\bgroup{%
         \multienv@@addenv
@@ -131,24 +235,49 @@
         \fi
     }#2\@nnil{#1}%
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\multienv@@addenv@}
+%    \begin{macrocode}
 \long\def\multienv@@addenv@#1\@nnil{%
     \multienv@@addenv{{#1}}\@nnil
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\multienv@@addenv}
+%    \begin{macrocode}
 \long\def\multienv@@addenv#1\@nnil#2{%
      \multienv@addcode{\multi@env{#2}#1}{\endmulti@env{#2}}%
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\multi@env}
+%    \begin{macrocode}
 \long\def\multi@env#1{%
   \begingroup
   \@ifundefined{#1}%
     {\@latex@error{Environment #1 undefined}\@eha}%
     {\csname #1\endcsname}%
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\endmulti@env}
+%    \begin{macrocode}
 \def\endmulti@env#1{\csname end#1\endcsname\endgroup}
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\multienv@addcode@out}
+%    \begin{macrocode}
 \long\def\multienv@addcode@out#1#2{%
     \@temptokena{#1}%
     \@temptokena\expandafter\expandafter\expandafter{\expandafter\the\expandafter\@temptokena\begin@multienv}%
@@ -156,7 +285,12 @@
     \@temptokena\expandafter{\end@multienv#2}%
     \edef\end@multienv{\the\@temptokena}%
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\multienv@addcode@in}
+%    \begin{macrocode}
 \long\def\multienv@addcode@in#1#2{%
     \@temptokena\expandafter{\begin@multienv#1}%
     \edef\begin@multienv{\the\@temptokena}%
@@ -164,13 +298,26 @@
     \@temptokena\expandafter\expandafter\expandafter{\expandafter\the\expandafter\@temptokena\end@multienv}%
     \edef\end@multienv{\the\@temptokena}%
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\multienv@key@add}
+%    \begin{macrocode}
 \long\@namedef{multienv@key@add code}#1\@nnil{%
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
     \multienv@addcode#1{}{}%
 }
-
+%    \end{macrocode}
+%
+% \begin{macro}{\multienv@key@adjustbox}
+%    \begin{macrocode}
 \long\@namedef{multienv@key@adjustbox}#1\@nnil{%
     \multienv@addcode{\csname adjustbox@noindent\endcsname\adjustbox{#1}\bgroup\ignorespaces}{\ifhmode\unskip\fi\egroup}%
 }
-
-
+%    \end{macrocode}
+% \end{macro}
+%
