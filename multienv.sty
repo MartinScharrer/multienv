@@ -23,21 +23,39 @@
 \newcommand\newmultienvironment{%
     \@ifstar{%
         \let\multienv@addcode\multienv@addcode@out
-        \newmultienvironment@
+        \newmultienvironment@marg
     }{%
         \let\multienv@addcode\multienv@addcode@in
-        \newmultienvironment@
+        \newmultienvironment@marg
     }%
 }
 
-\def\newmultienvironment@#1#2{%
+\def\newmultienvironment@marg#1{%
+    \@testopt{\newmultienvironment@oarg{#1}}{[0]}%
+}
+
+\def\newmultienvironment@oarg#1[#2]{%
+    \@ifnextchar[{%
+        \newmultienvironment@oargb{#1}{#2}%
+    }{%
+        \newmultienvironment@def{#1}{[#2]}%
+    }%
+}
+
+\def\newmultienvironment@oargb#1#2[#3]{%
+    \newmultienvironment@def{#1}{[#2][#3]}%
+}
+\def\newmultienvironment@def#1#2#3{%
     \begingroup
-    \multienv@readkeys@{#2}%
-    \global\let\@gtempa\begin@multienv
-    \global\let\@gtempb\end@multienv
+    \multienv@readkeys@{#3}%
+    \let\@tempb\begin@multienv
+    \global\let\@gtempa\end@multienv
+    \def\@tempa{#2}%
+    \expandafter
     \endgroup
-    \expandafter\let\csname #1\endcsname\@gtempa
-    \expandafter\let\csname end#1\endcsname\@gtempb
+    \expandafter\newcommand\csname #1\expandafter\expandafter\expandafter\endcsname\expandafter\@tempa\expandafter{\@tempb}
+    \expandafter\let\csname end#1\endcsname\@gtempa
+    \global\let\@gtempa\@empty
 }
 
 \def\multienv@readkeys#1{%
@@ -84,9 +102,9 @@
         \multienv@@addenv
     }{%
         \ifcase0%
-            \ifx\@let@token\@nnil1\else
-            \ifx\@let@token[1\else
-            \ifx\@let@token<1\fi\fi\fi
+            \expandafter\ifx\csname @let@token\endcsname\@nnil1\else
+            \expandafter\ifx\csname @let@token\endcsname[1\else
+            \expandafter\ifx\csname @let@token\endcsname<1\fi\fi\fi
         \relax
             \expandafter\multienv@@addenv@
         \else
