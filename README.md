@@ -5,7 +5,7 @@ CTAN: <http://www.ctan.org/pkg/multienv>
 Code repository: <https://bitbucket.org/martin_scharrer/multienv>
 
 This package provides a multienv environment which allows to easily
-apply multiple environments using a key=value syntax. Macros to deﬁne
+add multiple environments using a key=value syntax. Macros to define
 environments using this syntax are also provided.
 
 Example:
