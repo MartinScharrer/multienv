@@ -21,6 +21,28 @@
 }
 
 \newcommand\newmultienvironment{%
+    \let\@multi@environment\newenvironment
+    \@multienvironment
+}
+
+\newcommand\renewmultienvironment{%
+    \let\@multi@environment\renewenvironment
+    \@multienvironment
+}
+
+\newcommand\providemultienvironment{%
+    \@ifstar
+        {\@providemultienvironment*}%
+        {\@providemultienvironment{}}%
+}
+
+\def\@providemultienvironment#1#2{%
+    \@ifundefined{#2}%
+        {\newmultienvironment#1{#2}}%
+        {\begingroup\tracingall\renewcommand\@tempa[1][]{\renewcommand\@tempa[1][]{\expandafter\endgroup\@gobble}\@tempa}\@tempa}%
+}
+
+\def\@multienvironment{%
     \@ifstar{%
         \let\multienv@addcode\multienv@addcode@out
         \newmultienvironment@marg
@@ -30,11 +52,11 @@
     }%
 }
 
-\def\newmultienvironment@marg#1{%
+\long\def\newmultienvironment@marg#1{%
     \@testopt{\newmultienvironment@oarg{#1}}{[0]}%
 }
 
-\def\newmultienvironment@oarg#1[#2]{%
+\long\def\newmultienvironment@oarg#1[#2]{%
     \@ifnextchar[{%
         \newmultienvironment@oargb{#1}{#2}%
     }{%
@@ -42,27 +64,24 @@
     }%
 }
 
-\def\newmultienvironment@oargb#1#2[#3]{%
+\long\def\newmultienvironment@oargb#1#2[#3]{%
     \newmultienvironment@def{#1}{[#2][#3]}%
 }
-\def\newmultienvironment@def#1#2#3{%
+\long\def\newmultienvironment@def#1#2#3{%
     \begingroup
     \multienv@readkeys@{#3}%
-    \let\@tempb\begin@multienv
-    \global\let\@gtempa\end@multienv
-    \def\@tempa{#2}%
-    \expandafter
+    \def\@tempa{\@multi@environment*{#1}#2}%
+    \@temptokena\expandafter\expandafter\expandafter{\expandafter\expandafter\expandafter{\expandafter\begin@multienv\expandafter}\expandafter{\end@multienv}}%
+    \expandafter\expandafter\expandafter
     \endgroup
-    \expandafter\newcommand\csname #1\expandafter\expandafter\expandafter\endcsname\expandafter\@tempa\expandafter{\@tempb}
-    \expandafter\let\csname end#1\endcsname\@gtempa
-    \global\let\@gtempa\@empty
+    \expandafter\@tempa\the\@temptokena
 }
 
-\def\multienv@readkeys#1{%
+\long\def\multienv@readkeys#1{%
     \multienv@readkeys@{#1}%
     \begin@multienv
 }
-\def\multienv@readkeys@#1{%
+\long\def\multienv@readkeys@#1{%
     \let\begin@multienv\@empty
     \let\end@multienv\@empty
     \multienv@readkeyval#1,\@nnil,\@nnil
@@ -70,7 +89,7 @@
 \let\begin@multienv\@empty
 \let\end@multienv\@empty
 
-\def\multienv@readkeyval#1,{%
+\long\def\multienv@readkeyval#1,{%
     \ifx\@nnil#1\relax
         \expandafter\@gobble
     \else
@@ -78,7 +97,7 @@
         \expandafter\multienv@readkeyval
     \fi
 }
-\def\multienv@sepkeyval#1=#2={%
+\long\def\multienv@sepkeyval#1=#2={%
     \ifx\@nnil#2\relax
         \multienv@handlekeyval{#1}{}%
         \expandafter\@gobble
@@ -89,7 +108,7 @@
     \fi
 }
 
-\def\multienv@handlekeyval#1#2{%
+\long\def\multienv@handlekeyval#1#2{%
     \@ifundefined{multienv@key@#1}{%
         \multienv@addenv{#1}{#2}%
     }{%
@@ -97,7 +116,7 @@
     }%
 }
 
-\def\multienv@addenv#1#2{%
+\long\def\multienv@addenv#1#2{%
     \@ifnextchar\bgroup{%
         \multienv@@addenv
     }{%
@@ -113,15 +132,15 @@
     }#2\@nnil{#1}%
 }
 
-\def\multienv@@addenv@#1\@nnil{%
+\long\def\multienv@@addenv@#1\@nnil{%
     \multienv@@addenv{{#1}}\@nnil
 }
 
-\def\multienv@@addenv#1\@nnil#2{%
+\long\def\multienv@@addenv#1\@nnil#2{%
      \multienv@addcode{\multi@env{#2}#1}{\endmulti@env{#2}}%
 }
 
-\def\multi@env#1{%
+\long\def\multi@env#1{%
   \begingroup
   \@ifundefined{#1}%
     {\@latex@error{Environment #1 undefined}\@eha}%
@@ -130,7 +149,7 @@
 
 \def\endmulti@env#1{\csname end#1\endcsname\endgroup}
 
-\def\multienv@addcode@out#1#2{%
+\long\def\multienv@addcode@out#1#2{%
     \@temptokena{#1}%
     \@temptokena\expandafter\expandafter\expandafter{\expandafter\the\expandafter\@temptokena\begin@multienv}%
     \edef\begin@multienv{\the\@temptokena}%
@@ -138,7 +157,7 @@
     \edef\end@multienv{\the\@temptokena}%
 }
 
-\def\multienv@addcode@in#1#2{%
+\long\def\multienv@addcode@in#1#2{%
     \@temptokena\expandafter{\begin@multienv#1}%
     \edef\begin@multienv{\the\@temptokena}%
     \@temptokena{#2}%
@@ -146,11 +165,11 @@
     \edef\end@multienv{\the\@temptokena}%
 }
 
-\@namedef{multienv@key@add code}#1\@nnil{%
+\long\@namedef{multienv@key@add code}#1\@nnil{%
     \multienv@addcode#1{}{}%
 }
 
-\@namedef{multienv@key@adjustbox}#1\@nnil{%
+\long\@namedef{multienv@key@adjustbox}#1\@nnil{%
     \multienv@addcode{\csname adjustbox@noindent\endcsname\adjustbox{#1}\bgroup\ignorespaces}{\ifhmode\unskip\fi\egroup}%
 }
 
