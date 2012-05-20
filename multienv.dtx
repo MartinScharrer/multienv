@@ -33,9 +33,11 @@
 \documentclass{ydoc}
 \GetFileInfo{multienv.dtx}
 \usepackage{multienv}[\filedate]
+\providecommand\enquote[1]{``#1''}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
+\optionaloff
 \begin{document}
   \DocInput{\jobname.dtx}
   \PrintChanges
@@ -69,7 +71,7 @@
 %
 % \GetFileInfo{multienv.dtx}
 % \author{Martin Scharrer}
-% \email{martin@scharrer-scharrer.me}
+% \email{martin@scharrer-scharrer.de}
 % \ifdefined\repository
 %   \repository{https://bitbucket.org/martin_scharrer/multienv}
 % \fi
@@ -83,6 +85,121 @@
 % \end{abstract}
 %
 % \section{Introduction}
+%
+% \section{Usage}
+% \vspace{-3ex}
+% \DescribeEnv[<content>]{multienv}{<env=arg>','<key=value>,\ldots}
+% This environment takes a comma separated list of key=values where the keys are usually environment
+% names and the values the arguments to this environment.
+% The environments are added around the content in the given order, i.e.\ the first environment
+% is the most outer one and further environments are placed inside it.
+%
+% At the moment only the following key is defined. Any other key is taken as an environment name.
+%
+% \DescribeKey{add code}={<code before>}{<code after>}
+% This adds the given code before and after the content.
+% Any code is permitted including macro argument tokens like `|#1|'.
+%
+% \DescribeKey{\meta{environment}}
+% \DescribeKey{\meta{environment}}=<arguments>
+% Any unknown key is taken as environment name and the value as argument(s) to the environment.
+% If the value does not start with a brace `|{|', bracket `|[|' or angle `|<|' it is taken
+% as a single mandatory argument and is placed inside braces after the environment,
+% otherwise it is placed unchanged after the environment:
+% \par\medskip\par\noindent
+% \begin{tabular}{l@{ $\Rightarrow$ }l}
+%   \Key{\meta{env}}         & \Macro\begin{<env>}\ldots\Macro\end{<env>} \\
+%   \Key{\meta{env}}=        & \Macro\begin{<env>}\ldots\Macro\end{<env>} \\
+%   \Key{\meta{env}}=<arg>   & \Macro\begin{<env>}{<arg>}\ldots\Macro\end{<env>} \\
+%   \Key{\meta{env}}={<arg>} & \Macro\begin{<env>}{<arg>}\ldots\Macro\end{<env>} \\
+%   \Key{\meta{env}}={<arg1>}{<arg2>} & \Macro\begin{<env>}{<arg1>}{<arg2>}\ldots\Macro\end{<env>} \\
+%   \Key{\meta{env}}=[<oarg>] & \Macro\begin{<env>}[<oarg>]\ldots\Macro\end{<env>} \\
+%   \Key{\meta{env}}=[<oarg>]{<marg>} & \Macro\begin{<env>}[<oarg>]{<marg>}\ldots\Macro\end{<env>} \\
+%   \Key{\meta{env}}=<< <aarg> >> & \Macro\begin{<env>}<< <aarg> >>\ldots\Macro\end{<env>} \\
+%   \Key{\meta{env}}=<< <aarg> >>{<marg>} & \Macro\begin{<env>}<< <aarg> >>{<marg>}\ldots\Macro\end{<env>} \\
+%   \multicolumn{2}{l}{etc.} \\
+% \end{tabular}
+% \par\bigskip\par
+%
+% \DescribeEnv[<content>]{multienv*}{<env=arg>','<key=value>,\ldots}
+% This environment is identical to \env{multienv} but will apply the keys in the reverse order,
+% i.e.\ every environment or code is added around the existing environments or code.
+%
+%
+% \DescribeMacro\newmultienvironment{<env name>}[<number of args>][<default value>]{<env=arg>,\ldots}
+% This macro defines a new environment like \Macro\newenvironment does but uses the \env{multienv}
+% syntax. The resulting environment will contain all given environments and code.
+% The environment can have arguments including one leading optional argument.
+% The arguments can be used as part of the keys and values.
+% It should be noted that it is not allowed to use arguments in the second argument of
+% the \Key{add code} key, because that code will be part of \Macro\end{<env name>}.
+%
+% An error is raised if the environment already exists.
+%
+% \DescribeMacro\renewmultienvironment{<env name>}[<number of args>][<default value>]{<env=arg>,\ldots}
+% Like \Macro\newmultienvironment but can be used to redefine existing environments.
+% It is is not relevant \emph{how} the environment was defined previously.
+% An error is raised if the environment does not already exist.
+%
+%
+% \DescribeMacro\providemultienvironment{<env name>}[<number of args>][<default value>]{<env=arg>,\ldots}
+% Like \Macro\newmultienvironment but the environment is only defined if it is not already defined.
+% The environment is also not defined if there a macro with the same name exists.
+%
+% \section{Examples}
+% \lstset{gobble=4,language=[latex]tex}
+% The following \env{multienv} environment usage:
+% \begin{lstlisting}
+%   \begin{multienv}{enva,envb=arg,add code={code before}{code after},
+%       envc=[oarg]{marg}}
+%     content
+%   \end{multienv}
+% \end{lstlisting}
+% \noindent is identical to:
+% \begin{lstlisting}
+%   \begin{enva}
+%     \begin{envb}{arg}
+%       code before
+%       \begin{enc}[oarg]{marg}
+%          content
+%       \end{enc}
+%       code after
+%     \end{envb}
+%   \end{enva}
+% \end{lstlisting}
+% \noindent Using \env{multienv*} the order the environments can be given in the opposite order:
+% \begin{lstlisting}
+%   \begin{multienv}{envc=[oarg]{marg},add code={code before}{code after},
+%       envb=arg,enva}
+%     content
+%   \end{multienv}
+% \end{lstlisting}
+%
+% \par\bigskip\par\noindent
+% The following code defines a \env{centeredminipage} environment which content is placed
+% in a centered \env{minipage} which inner content is also centered.
+% \begin{lstlisting}
+%   \newmultienvironment{centeredminipage}[1]
+%     {center,minipage=#1,add code={\centering}{}}
+% \end{lstlisting}
+% \par\noindent
+% This is basically identical to:\par
+% \begin{lstlisting}
+%   \newenvironment{centeredminipage}[1]
+%     {\begin{center}\begin{minipage}{#1}\centering}
+%     {\end{minipage}\end{center}}
+% \end{lstlisting}
+% \par\noindent
+% However actually the \enquote{plain} form of the environment are used, because it is more efficient
+% and will also produce a correct error message if an incorrect \cs{end} macro is found:\par
+% \begin{lstlisting}
+%   \newenvironment{centeredminipage}[1]
+%     {\begingroup\center\begingroup\minipage{#1}\centering}
+%     {\endminipage\endgroup\endcenter\endgroup}
+% \end{lstlisting}
+% \par\noindent
+% The groups are added because some environments require to be placed in a group by themselves,
+% which is normally done by |\begin| and |\end|.
 %
 % \StopEventually{}
 % \clearpage
