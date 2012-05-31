@@ -47,19 +47,57 @@
 % \end{environment}
 %
 %
-% \begin{macro}{\multienv}
+%
+% \begin{macro}{\multicmd}
 %    \begin{macrocode}
-\newcommand{\multicmd}[2]{%
+\newcommand{\multicmd}{%
     \begingroup
+    \@ifstar
+        \@multicmd@s
+        \@multicmd
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\@multicmd}
+%    \begin{macrocode}
+\long\def\@multicmd#1{%
+    \@temptokena{}%
+    \@multicmd@revkeys#1,\@nnil,%
+    \expandafter\@multicmd@s\expandafter{\the\@temptokena}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\@multicmd@revkeys}
+%    \begin{macrocode}
+\long\def\@multicmd@revkeys#1,{%
+    \ifx\@nnil#1\relax
+    \else
+        \toks@{#1}%
+        \@temptokena\expandafter\expandafter\expandafter{\expandafter\the\expandafter\toks@\expandafter,\the\@temptokena}%
+        \expandafter\@multicmd@revkeys
+    \fi
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\@multicmd@s}
+%    \begin{macrocode}
+\long\def\@multicmd@s#1#2{%
     \let\multienv@addcode\multicmd@addcode
     \let\multienv@@addenv\multicmd@@addcmd
-    \@temptokena{{#2}}%
+    \@temptokena{#2}%
     \multienv@readkeys@{#1}%
     \expandafter\endgroup
     \the\@temptokena
 }
 %    \end{macrocode}
 % \end{macro}
+%
 %
 % \begin{macro}{\newmultienvironment}
 %    \begin{macrocode}
@@ -179,7 +217,7 @@
 \long\def\multienv@readkeys@#1{%
     \let\begin@multienv\@empty
     \let\end@multienv\@empty
-    \multienv@readkeyval#1,\@nnil,\@nnil
+    \multienv@readkeyval#1,\@nnil,\relax
 }
 %    \end{macrocode}
 % \end{macro}
@@ -192,12 +230,14 @@
 % \begin{macro}{\multienv@readkeyval}
 %    \begin{macrocode}
 \long\def\multienv@readkeyval#1,{%
-    \ifx\@nnil#1\relax
-        \expandafter\@gobble
+    \ifx\@nnil#1\@empty
+    \else
+    \ifx\@nnil#1\@nnil
+        \expandafter\expandafter\expandafter\multienv@readkeyval
     \else
         \multienv@sepkeyval#1=\@nnil=\@nnil\relax
-        \expandafter\multienv@readkeyval
-    \fi
+        \expandafter\expandafter\expandafter\multienv@readkeyval
+    \fi\fi
 }
 %    \end{macrocode}
 % \end{macro}
