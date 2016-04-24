@@ -1,6 +1,6 @@
 LaTeX package 'multienv'
 ========================
-Copyright (c) 2012 by Martin Scharrer <martin@scharrer-online.de>  
+Copyright (c) 2012-2016 by Martin Scharrer <martin@scharrer-online.de>  
 CTAN: <http://www.ctan.org/pkg/multienv>  
 Code repository: <https://bitbucket.org/martin_scharrer/multienv>
 
