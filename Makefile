@@ -1,6 +1,6 @@
 CONTRIBUTION  = multienv
 NAME          = Martin Scharrer
-EMAIL         = martin@scharrer-scharrer.de
+EMAIL         = martin@scharrer-online.de
 DIRECTORY     = /macros/latex/contrib/${CONTRIBUTION}
 LICENSE       = free
 FREEVERSION   = lppl
