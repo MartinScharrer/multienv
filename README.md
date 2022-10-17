@@ -1,8 +1,8 @@
 LaTeX package 'multienv'
 ========================
-Copyright (c) 2012-2016 by Martin Scharrer <martin@scharrer-online.de>  
+Copyright (c) 2012-2022 by Martin Scharrer <martin.scharrer@web.de>  
 CTAN: <http://www.ctan.org/pkg/multienv>  
-Code repository: <https://bitbucket.org/martin_scharrer/multienv>
+Code repository: <https://github.com/MartinScharrer/multienv/>
 
 This package provides a multienv environment which allows to easily
 add multiple environments using a key=value syntax. Macros to define
